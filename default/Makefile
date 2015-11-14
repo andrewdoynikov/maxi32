@@ -10,10 +10,8 @@ CC = avr-gcc
 
 CPP = avr-g++
 
-CHARSET = -fexec-charset=ks0066-ru
-
 ## Options common to compile, link and assembly rules
-COMMON = -mmcu=$(MCU) $(CHARSET)
+COMMON = -mmcu=$(MCU)
 
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
