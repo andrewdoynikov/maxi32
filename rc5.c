@@ -40,7 +40,7 @@ static uint8_t nint;
 /* ******************************************************************************** */
 void rc5_init (uint8_t addr)
 {
-nint  = 0; nbits = 0; rc5.flip = -1; rc5_addr = addr;
+  nint  = 0; nbits = 0; rc5.flip = -1; rc5_addr = addr;
 
 #if (RC5_PRESCALE==1024)
   TCCR0 = (1 << CS02) | (1 << CS00);
@@ -52,9 +52,9 @@ nint  = 0; nbits = 0; rc5.flip = -1; rc5_addr = addr;
 #error This RC5_PRESCALE is not supported
 #endif /* RC5_PRESCALE */
 
-/* INTx on falling edge */
-/* clear pending INTx */
-/* enable INTx interrupt */
+  /* INTx on falling edge */
+  /* clear pending INTx */
+  /* enable INTx interrupt */
 #if (RC5_INT == RC5_INT0)
   MCUCR = (MCUCR | (1 << ISC01)) & ~ (1 << ISC00);
   GIFR = (1 << INTF0);
@@ -70,37 +70,37 @@ nint  = 0; nbits = 0; rc5.flip = -1; rc5_addr = addr;
 /* ******************************************************************************** */
 SIGNAL (TIMER0_OVF_vect)
 {
-TIMSK &= ~(1 << TOIE0);
-uint8_t _nbits = nbits;
-code_t _code = code;
+  TIMSK &= ~(1 << TOIE0);
+  uint8_t _nbits = nbits;
+  code_t _code = code;
 
-if (26 == _nbits)
-{
-  _nbits++; _code.w <<= 1;
-}
-if (27 == _nbits && _code.b[1] >= 0x30 /* AGC == 3 */ && 0 > rc5.flip)
-{
-  uint8_t _rc5_code;
-  uint8_t _rc5_addr;
-  /* we do the bit manipulation stuff by hand, because of code size */
-  _rc5_code = _code.b[0] & 0x3f; /* 0b00111111 : #0..#5 */
-  _code.w <<= 2;
-  _rc5_addr = _code.b[1] & 0x1f; /* 0b00011111 : #6..#10 */
-  if (rc5_addr & 0x80 || rc5_addr == _rc5_addr)
-  {
-	rc5.code = _rc5_code;
-	rc5.addr = _rc5_addr;
-	signed char flip = 0;
-	if (_code.b[1] & 0x20) /* 0b00100000 : #11 */ flip = 1;
-	rc5.flip = flip;
-  }
-}
-nint = 0;
-nbits = 0;
+  if (26 == _nbits)
+    {
+      _nbits++; _code.w <<= 1;
+    }
+  if (27 == _nbits && _code.b[1] >= 0x30 /* AGC == 3 */ && 0 > rc5.flip)
+    {
+      uint8_t _rc5_code;
+      uint8_t _rc5_addr;
+      /* we do the bit manipulation stuff by hand, because of code size */
+      _rc5_code = _code.b[0] & 0x3f; /* 0b00111111 : #0..#5 */
+      _code.w <<= 2;
+      _rc5_addr = _code.b[1] & 0x1f; /* 0b00011111 : #6..#10 */
+      if (rc5_addr & 0x80 || rc5_addr == _rc5_addr)
+        {
+          rc5.code = _rc5_code;
+          rc5.addr = _rc5_addr;
+          signed char flip = 0;
+          if (_code.b[1] & 0x20) /* 0b00100000 : #11 */ flip = 1;
+          rc5.flip = flip;
+        }
+    }
+  nint = 0;
+  nbits = 0;
 
-/* INTx on falling edge */
-/* clear pending INTx */
-/* enable INTx interrupt */
+  /* INTx on falling edge */
+  /* clear pending INTx */
+  /* enable INTx interrupt */
 #if (RC5_INT == RC5_INT0)
   MCUCR = (MCUCR | (1 << ISC01)) & ~ (1 << ISC00);
   GIFR = (1 << INTF0);
@@ -120,63 +120,63 @@ SIGNAL (INT0_vect)
 SIGNAL (SIG_INTERRUPT1)
 #endif /* RC5_INT */
 {
-if (rc5.flip == -1)
-{
-code_t _code = code;
-uint8_t _nint = nint;
-uint8_t tcnt0 = TCNT0;
-TCNT0 = 0;
+  if (rc5.flip == -1)
+    {
+      code_t _code = code;
+      uint8_t _nint = nint;
+      uint8_t tcnt0 = TCNT0;
+      TCNT0 = 0;
 
-if (0 == _nint)
-{
-/* INTx on both edges */
+      if (0 == _nint)
+        {
+          /* INTx on both edges */
 #if (RC5_INT == RC5_INT0)
-   MCUCR = (MCUCR | (1 << ISC00)) & ~ (1 << ISC01);
+          MCUCR = (MCUCR | (1 << ISC00)) & ~ (1 << ISC01);
 #elif (RC5_INT == RC5_INT1)
-   MCUCR = (MCUCR | (1 << ISC10)) & ~ (1 << ISC11);
+          MCUCR = (MCUCR | (1 << ISC10)) & ~ (1 << ISC11);
 #endif /* RC5_INT */
 
-  TIFR = (1 << TOV0);
-  TIMSK |= (1 << TOIE0);
-  _code.w = 0;
-} else {
-  /* Number of bits of the just elapsed period */
-  uint8_t n = 1;
-  /* Bits received so far */
-  uint8_t _nbits = nbits;
-  /* is TCNT0 close to RC5_TICKS or RC5_TICKS/2 ? */
-  if (tcnt0 > RC5_TICKS + RC5_DELTA)
-	goto invalid;
-  else if (tcnt0 < RC5_TICKS/2 - RC5_DELTA)
-	goto invalid;
-  else if (tcnt0 > RC5_TICKS - RC5_DELTA)
-	n = 2;
-  else if (tcnt0 > RC5_TICKS/2 + RC5_DELTA)
-	goto invalid;
-  /* store the just received 1 or 2 bits */
-  do {
-	_nbits++;
-	if (_nbits & 1)
-	{
-	  _code.w <<= 1; _code.b[0] |= _nint & 1;
-	}
-  } // end do
-  while (--n);
-  if (0)
-  {
-	invalid:
+          TIFR = (1 << TOV0);
+          TIMSK |= (1 << TOIE0);
+          _code.w = 0;
+        } else {
+          /* Number of bits of the just elapsed period */
+          uint8_t n = 1;
+          /* Bits received so far */
+          uint8_t _nbits = nbits;
+          /* is TCNT0 close to RC5_TICKS or RC5_TICKS/2 ? */
+          if (tcnt0 > RC5_TICKS + RC5_DELTA)
+            goto invalid;
+          else if (tcnt0 < RC5_TICKS/2 - RC5_DELTA)
+            goto invalid;
+          else if (tcnt0 > RC5_TICKS - RC5_DELTA)
+            n = 2;
+          else if (tcnt0 > RC5_TICKS/2 + RC5_DELTA)
+            goto invalid;
+          /* store the just received 1 or 2 bits */
+          do {
+              _nbits++;
+              if (_nbits & 1)
+                {
+                  _code.w <<= 1; _code.b[0] |= _nint & 1;
+                }
+            } // end do
+          while (--n);
+          if (0)
+            {
+invalid:
 
-  /* disable INTx, run into Overflow0 */
+              /* disable INTx, run into Overflow0 */
 #if (RC5_INT == RC5_INT0)
-   GICR &= ~(1 << INT0);
+              GICR &= ~(1 << INT0);
 #elif (RC5_INT == RC5_INT1)
-   GICR &= ~(1 << INT1);
+              GICR &= ~(1 << INT1);
 #endif /* RC5_INT */
-   _nbits = 0;
-   }
-   nbits = _nbits;
-}
+              _nbits = 0;
+            }
+          nbits = _nbits;
+        }
 
-code = _code; nint = 1 + _nint;
-}
+      code = _code; nint = 1 + _nint;
+    }
 }

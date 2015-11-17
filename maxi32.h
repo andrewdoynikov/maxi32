@@ -1,12 +1,12 @@
 //************************************************************************************************
-// Project MAXI32 TIMER SERVICE  
+// Project MAXI32 TIMER SERVICE
 // Author: Andrew Doynikov
-// 15.08.2012	
+// 15.08.2012
 //************************************************************************************************
 #define  LNG_ENG      0
 #define  LNG_RUS      1
 #define  LNG_TYPE     LNG_RUS
-#define  LOGO_TIME	  40	
+#define  LOGO_TIME	  40
 //************************************************************************************************
 //объявляем программные таймеры
 SoftTimer kbd_timer;
@@ -123,9 +123,9 @@ char bignumchars2[] = {0x03,0x01,0x03, 0x01,0x03,0x01, 0x03,0x01,0x01, 0x01,0x01
 unsigned long freq_fm[] = {10120,10000,10040,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0};
 //************************************************************************************************
 unsigned char kbdkey_rc5[] = {
-KBD_STANDBY, KBD_SET, KBD_MUTE, KBD_UP, KBD_DOWN, KBD_LEFT, KBD_RIGHT, KBD_MENU, KBD_LONDNESS, KBD_SELECT,
-KBD_1, KBD_2, KBD_3, KBD_4, KBD_5, KBD_6, KBD_7, KBD_8, KBD_9, KBD_BANK, KBD_BASS_UP, KBD_BASS_DOWN,
-KBD_TREBLE_UP, KBD_TREBLE_DOWN };
+  KBD_STANDBY, KBD_SET, KBD_MUTE, KBD_UP, KBD_DOWN, KBD_LEFT, KBD_RIGHT, KBD_MENU, KBD_LONDNESS, KBD_SELECT,
+  KBD_1, KBD_2, KBD_3, KBD_4, KBD_5, KBD_6, KBD_7, KBD_8, KBD_9, KBD_BANK, KBD_BASS_UP, KBD_BASS_DOWN,
+  KBD_TREBLE_UP, KBD_TREBLE_DOWN };
 unsigned char key_rc5[] = { 12, 59, 13, 32, 33, 17, 16, 48, 44, 14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 55, 44, 54, 43, 24 };
 unsigned char rc5_to_kbd(unsigned char rc5);
 unsigned char n_select = 2, save_volume;
@@ -137,7 +137,7 @@ volatile unsigned char alarm_regim = 0;
 // Макросы функций
 #define light_on()  PORT_LIGHT_OUT |= _BV(PIN_LIGHT_OUT); light_cnt = 0;
 #define light_off() if (light_on_off) { PORT_LIGHT_OUT |= _BV(PIN_LIGHT_OUT); } else { PORT_LIGHT_OUT &= ~(_BV(PIN_LIGHT_OUT)); }  light_cnt = 0;
-#define light_stb() PORT_LIGHT_OUT &= ~(_BV(PIN_LIGHT_OUT)); 
+#define light_stb() PORT_LIGHT_OUT &= ~(_BV(PIN_LIGHT_OUT));
 #define led_standby_on()  PORT_LED_STANDBY &= ~(_BV(LED_STANDBY));
 #define led_standby_off() PORT_LED_STANDBY |= _BV(LED_STANDBY);
 #define ac_wait_on()  PORT_AC_WAIT |= _BV(PIN_AC_WAIT); _delay_ms(100);
@@ -163,7 +163,7 @@ volatile unsigned char light_on_off = 0, light_flag = 1;
 signed int temperature1 = 0, temperature2 = 0;
 unsigned char data1[8], data2[8];
 unsigned char owDevicesIDs[MAXDEVICES][8];
-unsigned char search_ow_devices(void); 
+unsigned char search_ow_devices(void);
 
 //************************************************************************************************
 //************************************************************************************************

@@ -1,7 +1,7 @@
 //************************************************************************************************
-// Project MAXI32 TIMER SERVICE  
+// Project MAXI32 TIMER SERVICE
 // Author: Andrew Doynikov
-// 15.08.2012	
+// 15.08.2012
 //************************************************************************************************
 #ifndef TIMER_SERVICE_H
 #define TIMER_SERVICE_H
@@ -31,7 +31,7 @@ enum StateTimer {IDLE, ACTIVE, DONE};
 typedef struct {
   unsigned int time;        //время срабатывания
   unsigned int period;      //период повторения
-  enum StateTimer state;    //текущее состояние 
+  enum StateTimer state;    //текущее состояние
   void (*pFunc)(void);      //указатель на функцию
 } SoftTimer;
 //************************************************************************************************

@@ -26,66 +26,66 @@ unsigned char get_extkey_kbd(unsigned long key);
 //************************************************************************************************
 void adc_init(void)
 {
-ADMUX = (0<<REFS1)|(1<<REFS0)|(0<<ADLAR)|(0<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0);
-ADCSRA = (1<<ADEN)|(0<<ADSC)|(0<<ADATE)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
+  ADMUX = (0<<REFS1)|(1<<REFS0)|(0<<ADLAR)|(0<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0);
+  ADCSRA = (1<<ADEN)|(0<<ADSC)|(0<<ADATE)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
 }
 //************************************************************************************************
 void scan_adckbd(void)
 {
-if (kbd_key == KBD_NOKEY)
-{
-  switch (adc_state) // switch
-  {
-  case 0: // Запуск преобразования
-  start_conv_adc();
-  adc_state = 2;
-  break;
-  case 1:
-  if (kbd_key != KBD_NOKEY)
-  {
-	kbd_nokey_flag = 0;
-	kbd_nokey_cnt = 0;
-  }
-  adc_state = 0;
-  break;
-  }
-}
+  if (kbd_key == KBD_NOKEY)
+    {
+      switch (adc_state) // switch
+        {
+        case 0: // Запуск преобразования
+          start_conv_adc();
+          adc_state = 2;
+          break;
+        case 1:
+          if (kbd_key != KBD_NOKEY)
+            {
+              kbd_nokey_flag = 0;
+              kbd_nokey_cnt = 0;
+            }
+          adc_state = 0;
+          break;
+        }
+    }
 }
 //************************************************************************************************
 ISR(ADC_vect)
 {
-if (adc_state == 2)
-{
-  extkey_volt = ADCW;
-  if (l_no_ext)
-  {
-	if (extkey_volt < ext_key_no - 5)
-	{
-	  ext_code = extkey_volt;
-	  beep();
-	  kbd_nokey_flag = 0; kbd_nokey_cnt = 0;
-	}
-  } else {
-	kbd_key = get_extkey_kbd(extkey_volt);
-  }
-  adc_state = 1;
-}
+  if (adc_state == 2)
+    {
+      extkey_volt = ADCW;
+      if (l_no_ext)
+        {
+          if (extkey_volt < ext_key_no - 5)
+            {
+              ext_code = extkey_volt;
+              beep();
+              kbd_nokey_flag = 0; kbd_nokey_cnt = 0;
+            }
+        } else {
+          kbd_key = get_extkey_kbd(extkey_volt);
+        }
+      adc_state = 1;
+    }
 }
 //************************************************************************************************
 unsigned char get_extkey_kbd(unsigned long key)
 {
-unsigned char ret = KBD_NOKEY, i;
-unsigned long v;
-for(i = 0; i < MENU_SETEXTKEY_MAX + 1; i++)
-{
-  v = extkey_volts[i];
-  if (val_in_param(key, v - 10, v + 10))
-  {
-	ret = extkey_kbd[i];
-	break;
-  }
-}
-return ret;
+  unsigned char ret = KBD_NOKEY, i;
+  unsigned long v;
+  for(i = 0; i < MENU_SETEXTKEY_MAX + 1; i++)
+    {
+      v = extkey_volts[i];
+      if (val_in_param(key, v - 10, v + 10))
+        {
+          ret = extkey_kbd[i];
+          break;
+        }
+    }
+  return ret;
 }
 //************************************************************************************************
 

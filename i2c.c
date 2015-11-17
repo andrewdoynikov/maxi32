@@ -1,7 +1,7 @@
 //*****************************************************************************
-// AudioProc programm 
-// Doynikov Andrew 
-// 11.04.2008 ver: 2.0 
+// AudioProc programm
+// Doynikov Andrew
+// 11.04.2008 ver: 2.0
 //*****************************************************************************
 // I2C FUNCTIONS
 //*****************************************************************************
@@ -13,11 +13,11 @@ void delay(unsigned long us)
 {
   us= us * 2;
   while (us)
-  {
-	asm volatile("nop\n\t"::);
-	asm volatile("nop\n\t"::);
-	us--;
-  }
+    {
+      asm volatile("nop\n\t"::);
+      asm volatile("nop\n\t"::);
+      us--;
+    }
 }
 // ============================================================================
 void i2c_init(void)
@@ -58,51 +58,51 @@ void i2c_stop(void)
 // ============================================================================
 unsigned char i2c_write(unsigned char data)
 {
-register unsigned char bit = 0;
-for(bit=0; bit<=7; bit++)
-{
-  if( data & 0x80 ) { SDA_1(); } else { SDA_0(); }
-    SCL_1();
-    delay(I2C_DELAY);
-    SCL_0();
-    delay(I2C_DELAY);
-    data = (data<<1);
-  }
+  register unsigned char bit = 0;
+  for(bit=0; bit<=7; bit++)
+    {
+      if( data & 0x80 ) { SDA_1(); } else { SDA_0(); }
+      SCL_1();
+      delay(I2C_DELAY);
+      SCL_0();
+      delay(I2C_DELAY);
+      data = (data<<1);
+    }
   RELEASE_I2C_BUS();
   delay(I2C_DELAY);
   if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) )
-  {
-    SCL_0();
-    delay(I2C_DELAY);
-  }	else {
-    delay(I2C_TIMEOUT);
-	if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) )
-	{
-	  SCL_0();
-	  delay(I2C_DELAY);
-	} else { return(I2C_ERROR_DEVICE_NOT_RESPONDING); }
-  }
-  if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) ) 
-  { 
-    delay(I2C_TIMEOUT);
-    if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) ) { return(I2C_ERROR_DEVICE_BUSY); }
-  }   
-return(I2C_NO_ERROR);	  
+    {
+      SCL_0();
+      delay(I2C_DELAY);
+    }	else {
+      delay(I2C_TIMEOUT);
+      if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) )
+        {
+          SCL_0();
+          delay(I2C_DELAY);
+        } else { return(I2C_ERROR_DEVICE_NOT_RESPONDING); }
+    }
+  if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) )
+    {
+      delay(I2C_TIMEOUT);
+      if( bit_is_clear(I2C_SDA_PIN_REG, SDA_PIN) ) { return(I2C_ERROR_DEVICE_BUSY); }
+    }
+  return(I2C_NO_ERROR);
 }
 // ============================================================================
 unsigned char i2c_read(unsigned char ack)
 {
-register unsigned char bit=0, data=0;
-SDA_1();
-for(bit=0; bit<=7; bit++)
-{
-  SCL_1();
-  delay(I2C_DELAY);
-  data = (data<<1);
-  if( bit_is_set(I2C_SDA_PIN_REG, SDA_PIN) ) { data++; }
-    SCL_0();
-    delay(I2C_DELAY);
-  }
+  register unsigned char bit=0, data=0;
+  SDA_1();
+  for(bit=0; bit<=7; bit++)
+    {
+      SCL_1();
+      delay(I2C_DELAY);
+      data = (data<<1);
+      if( bit_is_set(I2C_SDA_PIN_REG, SDA_PIN) ) { data++; }
+      SCL_0();
+      delay(I2C_DELAY);
+    }
   if(ack==1) { SDA_0(); }  else { SDA_1(); }
   SCL_1();
   delay(I2C_DELAY);
