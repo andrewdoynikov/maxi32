@@ -35,6 +35,33 @@ unsigned long frequency = 10120, freq_step = STEP50, tmp_frequency;
 volatile unsigned char n_chanel = 1, tmp_chanel;
 unsigned char n_bank;
 //*****************************************************************************
+// TUX03 stuff
+#define TUX032_I2C_ADDR			0b11000010
+static uint8_t wrBuf[9] = {0x80, 0x00, 0x00, 0x64, 0xB1, 0xC6, 0x4B, 0xA2, 0xD2};
+static void tux032WriteI2C(uint8_t bytes) {
+  uint8_t i;
+  i2c_start();
+  i2c_write(TUX032_I2C_ADDR);
+  for (i = 0; i < bytes; i++)
+    i2c_write(wrBuf[i]);
+  i2c_stop();
+  return;
+}
+void tux032PowerOn(void)
+{
+  wrBuf[0] = 0x82;
+  wrBuf[1] = 0x64;
+  tux032WriteI2C(2);
+}
+void tux032SetFreq(uint16_t freq)
+{
+  freq = freq / 5 + 214;
+  wrBuf[0] = 0x80;
+  wrBuf[1] = freq >> 8;
+  wrBuf[2] = freq & 0xFF;
+  tux032WriteI2C(sizeof(wrBuf));
+}
+
 void send_lm7001(unsigned long freq)
 {
   unsigned long freqs, freq_get;
@@ -49,6 +76,8 @@ void send_lm7001(unsigned long freq)
   send_lm7001_byte(h);
   send_lm7001_byte(0xC0);
   lm7001_en_off(); _delay_ms(1);
+  // TUX03 stuff
+  tux032SetFreq (freq);
   if ((freq < MINFREQ) || (freq > MAXFREQ))
     {
       send_tda7313_mute();

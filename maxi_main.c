@@ -90,6 +90,8 @@ void init_hardware(void)
 {
   // I2C init
   i2c_init();
+  // TUX03 stuff
+  tux032PowerOn();
   // Lcd init
   lcd_init();
   // RTC init
@@ -376,4 +378,3 @@ int main(void)
   return 0;
 }
 //************************************************************************************************
-
